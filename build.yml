@@ -1,0 +1,218 @@
+default: "help"
+expose: [
+    "info",
+    "docker",
+    "docker-tag",
+    "docker-push",
+  ]
+configuration: ["~/.dockerhub.yml", "~/.github.yml"] # DO NOT COMMIT THESE FILES
+# ~/.dockerhub.yml should contains:
+# DOCKERHUB_USER: <your dockerhub user>
+# DOCKERHUB_PASS: <your dockerhub password or a dockerhub token>
+# ~/.github.yml should contains:
+# GITHUB_TOKEN: <your github token>
+
+properties:
+  # Build Configuration (edit this section to override default values)
+  BY: "" # Leave empty to default to the user.email property in git configuration
+  MODULE: "" # Leave empty to default to the git remote url (e.g. "github.com/<usename>/<reponame>")
+  PROJECT: "" # Leave empty to default to the git repository name (e.g. "<reponame>")
+  DOCKERHUB_ORGANIZATION: "cgifr" # Image tag : cgi-fr/lino
+
+  # Build parameters (use the -props flag or change these default values)
+  tag: "" # Default to the current branch or tag, can be overriden
+  latest: false # Do not tag the Docker image with latest, specify othewise with `-props "{latest: true}"`
+
+
+  # If true, do not upload release when publish target is used
+  snapshot: false
+
+  # List of Dockerfiles to build, defined by a map of {key=Dockerfile name ; value=path to build context}, the image name will be determined by the extension of the Dockerfile
+  dockerfiles:
+    Dockerfile.debian: .
+    Dockerfile.oracle: .
+
+
+shell: ["sh", "-c"]
+
+targets:
+  info:
+    doc: "Print build informations"
+    steps:
+      - if: tag == ""
+        then:
+          - $: "git describe --tags --exact-match 2>/dev/null || git symbolic-ref -q --short HEAD"
+            1=: "tag"
+            3x: true
+        else:
+          - $: "echo -n ={tag}"
+            1=: "tag"
+            3x: true
+      - $: 'echo -n "={tag}" | sed -e s/^v//'
+        1=: "version"
+        3x: true
+      - $: "git rev-parse HEAD 2>/dev/null"
+        1=: "commit"
+        3x: true
+      - "date = now()[0:10]"
+      - if: BY == ""
+        then:
+          - $: "git config user.email"
+            1=: "by"
+            3x: true
+        else:
+          - $: "echo -n ={BY}"
+            1=: "by"
+            3x: true
+      - $: 'if expr match "={version}" "v\?[0-9]\+\.[0-9]\+\.[0-9]\+" 1>/dev/null 2>&1; then echo -n "yes"; else echo -n "no"; fi'
+        1=: "is_release"
+        3x: true
+      - $: "cut -f1 -d."
+        <: "=version"
+        1=: "version_major"
+        3x: true
+      - $: "cut -f2 -d."
+        <: "=version"
+        1=: "version_minor"
+        3x: true
+      - $: "cut -f3 -d."
+        <: "=version"
+        1=: "version_patch"
+        3x: true
+      - if: MODULE == ""
+        then:
+          - $: "git config --local remote.origin.url | sed -n 's#^.*//\\(.*\\)\\.git$#\\1#p' | tr '[:upper:]' '[:lower:]'" # .*//(.*)\.git => https://github.com/<user>/<repo>.git => github.com/<user>/<repo>
+            1=: "mod"
+            3x: true
+        else:
+          - $: "echo -n ={MODULE}"
+            1=: "mod"
+            3x: true
+      - if: PROJECT == ""
+        then:
+          - $: "cut -f3 -d/"
+            <: "=mod"
+            1=: "project"
+            3x: true
+        else:
+          - $: "echo -n ={PROJECT}"
+            1=: "project"
+            3x: true
+      - print: |-
+          MODULE  = ={mod}
+          PROJECT = ={project}
+          TAG     = ={tag}
+          COMMIT  = ={commit}
+          DATE    = ={date}
+          BY      = ={by}
+          RELEASE = ={is_release}
+      - if: 'is_release == "yes"'
+        then:
+          - print: |-
+              VERSION = ={version_major}.={version_minor}.={version_patch}
+
+  # run "neon -props '{dockerfiles: {"path/to/Dockerfile1": "path/to/root/build/context"}}' docker" to build specific Dockerfiles
+  # example : neon -props '{dockerfiles: {"Dockerfile": "."}}' docker
+  docker:
+    doc: "Build docker images"
+    depends: ["info"]
+    steps:
+      - try:
+          - $: "# ={DOCKERHUB_ORGANIZATION}"
+            3x: true
+        catch:
+          - print: |
+              To use this target, make sure your DOCKERHUB_ORGANIZATION is set.
+          - $: return 1
+      - $: "date -u +'%Y-%m-%dT%H:%M:%SZ'"
+        1=: "daterfc3339"
+        3x: true
+      - |
+        build_args  = " --build-arg BUILD_DATE=" + daterfc3339
+        build_args += " --build-arg VERSION=" + version
+        build_args += " --build-arg REVISION=" + commit
+      - for: key
+        in: keys(dockerfiles)
+        do:
+          - |
+            keycomponents = split(key, ".")
+            suffix = ""
+            if len(keycomponents) > 1 {
+              suffix = "-" + keycomponents[len(keycomponents)-1]
+            }
+          - $: "sudo docker build -q -t ={DOCKERHUB_ORGANIZATION}/={project}:={tag}={suffix} -f ={key} ={dockerfiles[key]}"
+            1x: true
+
+  # run "neon -props '{latest: true}' docker-tag" to include latest tag
+  docker-tag:
+    doc: "Tag docker images"
+    # unless: 'is_release != "yes"' => is_release unknown variable, issue to open
+    depends: ["info", "docker"]
+    steps:
+      - if: 'is_release == "yes"'
+        then:
+          - try:
+              - $: "# ={DOCKERHUB_ORGANIZATION}"
+                3x: true
+            catch:
+              - print: |
+                  To use this target, make sure your DOCKERHUB_ORGANIZATION is set.
+              - $: return 1
+          - for: key
+            in: keys(dockerfiles)
+            do:
+              - |
+                keycomponents = split(key, ".")
+                suffix = ""
+                if len(keycomponents) > 1 {
+                  suffix = "-" + keycomponents[len(keycomponents)-1]
+                }
+              - $: "sudo docker tag ={DOCKERHUB_ORGANIZATION}/={project}:={tag}={suffix} ={DOCKERHUB_ORGANIZATION}/={project}:v={version_major}={suffix}"
+              - $: "sudo docker tag ={DOCKERHUB_ORGANIZATION}/={project}:={tag}={suffix} ={DOCKERHUB_ORGANIZATION}/={project}:v={version_major}.={version_minor}={suffix}"
+              - if: "latest"
+                then:
+                  - $: "sudo docker tag ={DOCKERHUB_ORGANIZATION}/={project}:={tag}={suffix} ={DOCKERHUB_ORGANIZATION}/={project}:latest={suffix}"
+        else:
+          - print: "Skipping release target (not a release)"
+            color: red
+
+  docker-login:
+    steps:
+      - try:
+          - $: "sudo docker login -u ={DOCKERHUB_USER} -p ={DOCKERHUB_PASS}"
+            2x: true
+        catch:
+          - print: |
+              To use this target, make sure your credentials are valid in the file ~/.dockerhub.yml
+              The content of the file should be :
+                DOCKERHUB_USER: <your dockerhub user>
+                DOCKERHUB_PASS: <your dockerhub password or a dockerhub token>
+          - $: return 1
+
+  # run "neon -props '{latest: true}' docker-push" to include latest tag
+  docker-push:
+    doc: "Push docker images to Dockerhub"
+    # unless: 'is_release != "yes"' => is_release unknown variable, issue to open
+    depends: ["docker", "docker-tag", "docker-login"]
+    steps:
+      - if: 'is_release == "yes"'
+        then:
+          - for: key
+            in: keys(dockerfiles)
+            do:
+              - |
+                keycomponents = split(key, ".")
+                suffix = ""
+                if len(keycomponents) > 1 {
+                  suffix = "-" + keycomponents[len(keycomponents)-1]
+                }
+              - $: "sudo docker push ={DOCKERHUB_ORGANIZATION}/={project}:v={version_major}={suffix}"
+              - $: "sudo docker push ={DOCKERHUB_ORGANIZATION}/={project}:v={version_major}.={version_minor}={suffix}"
+              - $: "sudo docker push ={DOCKERHUB_ORGANIZATION}/={project}:v={version_major}.={version_minor}.={version_patch}={suffix}"
+              - if: "latest"
+                then:
+                  - $: "sudo docker push ={DOCKERHUB_ORGANIZATION}/={project}:latest={suffix}"
+        else:
+          - print: "Skipping release target (not a release)"
+            color: red
+
