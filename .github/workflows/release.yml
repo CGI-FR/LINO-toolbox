@@ -39,4 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
         run: |
+          echo "GITHUB_TOKEN: ${GITHUB_TOKEN}" > ~/.github.yml
+          echo "DOCKERHUB_USER: cgibot" > ~/.dockerhub.yml
+          echo "DOCKERHUB_PASS: ${DOCKERHUB_PASS}" >> ~/.dockerhub.yml
           neon -props "{tag: ${CI_ACTION_REF_NAME}, MODULE: github.com/${CI_REPOSITORY,,}, BY: ${CI_ACTOR}}" docker-push
