@@ -26,10 +26,12 @@ jobs:
           fetch-depth: 0
 
       - name: install neon
-        run: sh -c "$(curl https://sweetohm.net/dist/neon/install)"
+        run: | 
+          sudo curl -o /usr/bin/neon https://sweetohm.net/dist/neon/neon-linux-amd64
+          sudo chmod +x  /usr/bin/neon
 
       - name: Init env
-        run:  touch ${HOME}/.dockerhub.yml /home/vscode/.github.yml
+        run:  touch ${HOME}/.dockerhub.yml ${HOME}/.github.yml
 
       - uses: FranzDiebold/github-env-vars-action@v2
       - name: Release
