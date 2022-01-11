@@ -49,7 +49,10 @@ targets:
           - $: "echo -n ={tag}"
             1=: "tag"
             3x: true
-      - $: 'echo -n "={tag}" | sed -e s/^v// | sed -e s#/##'
+      - $: 'echo -n "={tag}" | sed -e s#/##'
+        1=: "tag"
+        3x: true
+      - $: 'echo -n "={tag}" | sed -e s/^v//'
         1=: "version"
         3x: true
       - $: "git rev-parse HEAD 2>/dev/null"
