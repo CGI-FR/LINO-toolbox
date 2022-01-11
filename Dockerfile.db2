@@ -27,8 +27,8 @@ RUN apt-get update && \
     apt-get clean -y && \
     rm -r /var/cache/* /var/lib/apt/lists/*
 
-ARG VERSION_MILLER=5.10.2
-ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/mlr.linux.x86_64 /usr/bin/mlr
+ARG VERSION_MILLER=6.0.0
+ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller_${VERSION_MILLER}_linux_amd64.tar.gz /usr/bin/mlr
 RUN chmod +x /usr/bin/mlr
 
 COPY --from=lino /usr/bin/lino /usr/bin/lino
