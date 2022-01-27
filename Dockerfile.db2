@@ -16,14 +16,15 @@
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
 ARG VERSION_PIMO=v1.11.0
+ARG VERSION_MC=RELEASE.2021-12-10T00-14-28Z
+ARG VERSION_DEBIAN=stable-20211220-slim
+
 FROM cgifr/pimo:${VERSION_PIMO} AS pimo
 
 FROM cgifr/lino:v1.7-db2 AS lino
 
-ARG VERSION_MC=RELEASE.2021-12-10T00-14-28Z
 FROM minio/mc:${VERSION_MC} as mc
 
-ARG VERSION_DEBIAN=stable-20211220-slim
 FROM debian:${VERSION_DEBIAN}
 
 
