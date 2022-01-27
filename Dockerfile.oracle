@@ -15,25 +15,25 @@
 # You should have received a copy of the GNU General Public License
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
-FROM cgifr/pimo:v1.11.0 AS pimo
+ARG VERSION_PIMO=v1.11.0
+FROM cgifr/pimo:${VERSION_PIMO} AS pimo
 
-FROM cgifr/lino:v1.8.0 AS lino
+ARG VERSION_LINO=v1.9.0
+FROM cgifr/lino:${VERSION_LINO} AS lino
 
-FROM debian:stable-20211220-slim
+FROM ghcr.io/oracle/oraclelinux7-instantclient:19
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends less jq wget git postgresql-client && \
-    apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -r /var/cache/* /var/lib/apt/lists/*
+RUN yum -y install less jq wget git && \
+    rm -rf /var/cache/yum
+
 
 ARG VERSION_MILLER=6.0.0
 ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller_${VERSION_MILLER}_linux_amd64.tar.gz /usr/bin/mlr
 RUN chmod +x /usr/bin/mlr
 
 COPY --from=lino /usr/bin/lino /usr/bin/lino
-
 COPY --from=pimo /usr/bin/pimo /usr/bin/pimo
+COPY --from=mc /usr/bin/mc /usr/bin/mc
 
 WORKDIR /home/lino
 

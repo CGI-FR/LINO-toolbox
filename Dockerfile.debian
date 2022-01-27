@@ -15,11 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
-FROM cgifr/pimo:v1.11.0 AS pimo
+ARG VERSION_PIMO=v1.11.0
+FROM cgifr/pimo:${VERSION_PIMO} AS pimo
 
-FROM cgifr/lino:v1.8.0 AS lino
+ARG VERSION_LINO=v1.9.0
+FROM cgifr/lino:${VERSION_LINO} AS lino
 
-FROM debian:stable-20211220-slim
+ARG VERSION_MC=RELEASE.2021-12-10T00-14-28Z
+FROM minio/mc:${VERSION_MC} as mc
+
+ARG VERSION_DEBIAN=stable-20211220-slim
+FROM debian:${VERSION_DEBIAN}
+
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends less jq wget git postgresql-client && \
@@ -32,8 +39,9 @@ ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/mill
 RUN chmod +x /usr/bin/mlr
 
 COPY --from=lino /usr/bin/lino /usr/bin/lino
-
 COPY --from=pimo /usr/bin/pimo /usr/bin/pimo
+COPY --from=mc /usr/bin/mc /usr/bin/mc
+
 
 WORKDIR /home/lino
 
