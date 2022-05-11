@@ -31,11 +31,10 @@ properties:
   dockerfiles:
     Dockerfile.debian: .
     Dockerfile.oracle: .
-    Dockerfile.db2: .
 
   version_miller: "6.0.0"
-  version_lino: "v1.8.0"
-  version_pimo: "v1.11.0"
+  version_lino: "v2.0.1"
+  version_pimo: "v1.12.1"
   version_debian: "stable-20211220-slim"
   version_mc: "RELEASE.2021-12-10T00-14-28Z"
 
