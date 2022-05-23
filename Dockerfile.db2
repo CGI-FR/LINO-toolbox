@@ -30,7 +30,7 @@ FROM debian:${VERSION_DEBIAN}
 
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends less jq wget git libxml2-dev netcat pv && \
+    apt-get install -y --no-install-recommends less jq wget git libxml2-dev pv && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -r /var/cache/* /var/lib/apt/lists/*
@@ -38,6 +38,9 @@ RUN apt-get update && \
 ARG VERSION_MILLER=6.0.0
 ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller_${VERSION_MILLER}_linux_amd64.tar.gz /usr/bin/mlr
 RUN chmod +x /usr/bin/mlr
+
+ADD https://github.com/andrew-d/static-binaries/raw/master/binaries/linux/x86_64/ncat /usr/bin/nc
+RUN chmod +x /usr/bin/nc
 
 ENV DB2_HOME=/opt/db2/clidriver
 ENV LD_LIBRARY_PATH=${DB2_HOME}/lib
