@@ -15,29 +15,35 @@
 # You should have received a copy of the GNU General Public License
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
-ARG VERSION_PIMO=v1.12.1
-ARG VERSION_LINO=v2.0.1
-ARG VERSION_MC=RELEASE.2021-12-10T00-14-28Z
-ARG VERSION_DEBIAN=stable-20211220-slim
+ARG VERSION_PIMO=v1.15.0
+ARG VERSION_LINO=v2.2-debian
+ARG VERSION_SIGO=0.3.0 
+ARG VERSION_MILLER=6.5.0
+ARG VERSION_MC=RELEASE.2022-11-17T21-20-39Z
+ARG VERSION_DEBIAN=stable-20221114-slim
+
 
 FROM cgifr/pimo:${VERSION_PIMO} AS pimo
 
 FROM cgifr/lino:${VERSION_LINO} AS lino
 
-FROM minio/mc:${VERSION_MC} as mc
+FROM minio/mc:${VERSION_MC} AS mc
 
 FROM debian:${VERSION_DEBIAN}
 
+ARG VERSION_MILLER
+ARG VERSION_SIGO
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends less jq wget git postgresql-client pv && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -r /var/cache/* /var/lib/apt/lists/*
-
-ARG VERSION_MILLER=6.0.0
-ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller_${VERSION_MILLER}_linux_amd64.tar.gz /usr/bin/mlr
+ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller-${VERSION_MILLER}-linux-amd64.tar.gz /usr/bin/mlr
 RUN chmod +x /usr/bin/mlr
+
+ADD https://github.com/CGI-FR/SIGO/releases/download/v${VERSION_SIGO}/SIGO_${VERSION_SIGO}_linux_amd64.tar.gz /usr/bin/sigo
+RUN chmod +x /usr/bin/sigo
 
 ADD https://github.com/andrew-d/static-binaries/raw/master/binaries/linux/x86_64/ncat /usr/bin/nc
 RUN chmod +x /usr/bin/nc

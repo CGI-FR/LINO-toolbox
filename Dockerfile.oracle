@@ -15,9 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
-ARG VERSION_PIMO=v1.12.1
-ARG VERSION_LINO=v2.0.1
-ARG VERSION_MC=RELEASE.2021-12-10T00-14-28Z
+ARG VERSION_PIMO=v1.15.0
+ARG VERSION_LINO=v2.2-oracle
+ARG VERSION_SIGO=0.3.0 
+ARG VERSION_MILLER=6.5.0
+ARG VERSION_MC=RELEASE.2022-11-17T21-20-39Z
 
 FROM cgifr/pimo:${VERSION_PIMO} AS pimo
 
@@ -27,13 +29,18 @@ FROM minio/mc:${VERSION_MC} as mc
 
 FROM ghcr.io/oracle/oraclelinux7-instantclient:19
 
+
+ARG VERSION_MILLER
+ARG VERSION_SIGO
+
 RUN yum -y install less jq wget git pv  && \
     rm -rf /var/cache/yum
 
-
-ARG VERSION_MILLER=6.0.0
-ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller_${VERSION_MILLER}_linux_amd64.tar.gz /usr/bin/mlr
+ADD https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller-${VERSION_MILLER}-linux-amd64.tar.gz /usr/bin/mlr
 RUN chmod +x /usr/bin/mlr
+
+ADD https://github.com/CGI-FR/SIGO/releases/download/v${VERSION_SIGO}/SIGO_${VERSION_SIGO}_linux_amd64.tar.gz /usr/bin/sigo
+RUN chmod +x /usr/bin/sigo
 
 ADD https://github.com/andrew-d/static-binaries/raw/master/binaries/linux/x86_64/ncat /usr/bin/nc
 RUN chmod +x /usr/bin/nc
