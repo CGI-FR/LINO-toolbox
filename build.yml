@@ -156,7 +156,7 @@ targets:
             if len(keycomponents) > 1 {
               suffix = "-" + keycomponents[len(keycomponents)-1]
             }
-          - $: "sudo docker build -q -t ={DOCKERHUB_ORGANIZATION}/={project}:={tag}={suffix} -f ={key} ={dockerfiles[key]}"
+          - $: "sudo docker build --no-cache -q -t ={DOCKERHUB_ORGANIZATION}/={project}:={tag}={suffix} -f ={key} ={dockerfiles[key]}"
             1x: true
 
   # run "neon -props '{latest: true}' docker-tag" to include latest tag
