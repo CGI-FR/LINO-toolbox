@@ -34,24 +34,17 @@ FROM debian:${VERSION_DEBIAN}
 ARG VERSION_MILLER
 ARG VERSION_SIGO
 
-RUN mkdir -p /tmp/toolbox
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends less jq wget git postgresql-client pv && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -r /var/cache/* /var/lib/apt/lists/*
+    rm -r /var/cache/* /var/lib/apt/lists/* 
 
-RUN wget --no-check-certificate https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller-${VERSION_MILLER}-linux-amd64.tar.gz -O /tmp/toolbox/miller-${VERSION_MILLER}-linux-amd64.tar.gz
-RUN tar -xvzf /tmp/toolbox/miller-${VERSION_MILLER}-linux-amd64.tar.gz -C  /tmp/toolbox/ && \
-    mv /tmp/toolbox/miller-${VERSION_MILLER}-linux-amd64/mlr /usr/bin/mlr && \
+RUN wget -nv -O- https://github.com/johnkerl/miller/releases/download/v${VERSION_MILLER}/miller-${VERSION_MILLER}-linux-amd64.tar.gz | tar -xz --strip-components 1 -C /usr/bin miller-${VERSION_MILLER}-linux-amd64/mlr &&\
     chmod +x /usr/bin/mlr
-
-RUN wget --no-check-certificate https://github.com/CGI-FR/SIGO/releases/download/v${VERSION_SIGO}/SIGO_${VERSION_SIGO}_linux_amd64.tar.gz -O /tmp/toolbox/SIGO_${VERSION_SIGO}_linux_amd64.tar.gz
-RUN tar -xvzf /tmp/toolbox/SIGO_${VERSION_SIGO}_linux_amd64.tar.gz -C /tmp/toolbox/ && \
-    mv /tmp/toolbox/sigo /usr/bin/sigo && \
+    
+RUN wget -nv -O- https://github.com/CGI-FR/SIGO/releases/download/v${VERSION_SIGO}/SIGO_${VERSION_SIGO}_linux_amd64.tar.gz | tar -xz -C /usr/bin sigo &&\
     chmod +x /usr/bin/sigo
-
 
 ADD https://github.com/andrew-d/static-binaries/raw/master/binaries/linux/x86_64/ncat /usr/bin/nc
 RUN chmod +x /usr/bin/nc
@@ -60,6 +53,5 @@ COPY --from=pimo /usr/bin/pimo /usr/bin/pimo
 COPY --from=lino /usr/bin/lino /usr/bin/lino
 COPY --from=mc /usr/bin/mc /usr/bin/mc
 
-RUN rm -rf /tmp/toolbox
 
 WORKDIR /home/lino
