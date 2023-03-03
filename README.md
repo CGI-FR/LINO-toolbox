@@ -16,7 +16,7 @@ This command will start a Docker container with the cgifr/lino-toolbox:v1.0.0-de
 | Tool | Source  | Version |
 |------|---------|---------|
 |debian|docker hub|debian:stable-20221114-slim |
-|lino  |docker hub|cgifr/lino:2.2 |
+|lino  |docker hub|cgifr/lino:2.3 |
 |pimo  |docker hub|cgifr/pimo:1.17.0 |
 |sigo  |github   |0.3.0 |
 |mlr   |github   |6.5.0 |
@@ -30,7 +30,7 @@ This command will start a Docker container with the cgifr/lino-toolbox:v1.0.0-de
 | Tool | Source  | Version |
 |------|---------|---------|
 |oracle|docker hub|ghcr.io/oracle/oraclelinux7-instantclient:19 |
-|lino  |doker hub|cgifr/lino:2.2 |
+|lino  |doker hub|cgifr/lino:2.3 |
 |pimo  |docker hub|cgifr/pimo:1.17.0 |
 |sigo  |github   |0.3.0 |
 |mlr   |github   |6.5.0 |
