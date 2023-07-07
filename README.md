@@ -20,7 +20,7 @@ This command will start a Docker container with the cgifr/lino-toolbox:v1.1.0-de
 |pimo  |docker hub|cgifr/pimo:1.19.0 |
 |sigo  |github   |0.3.0 |
 |mlr   |github   |6.8.0 |
-|mc    |docker hub|minio/mc:RELEASE.2023-07-07T07-13-57Z|
+|mc    |docker hub|minio/mc:RELEASE.2023-07-07T05-25-51Z|
 |jq    |debian   |- |
 |wget  |debian   |- |
 |git   |debian   |- |
