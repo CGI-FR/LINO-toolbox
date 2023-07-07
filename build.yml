@@ -30,15 +30,6 @@ properties:
   # List of Dockerfiles to build, defined by a map of {key=Dockerfile name ; value=path to build context}, the image name will be determined by the extension of the Dockerfile
   dockerfiles:
     Dockerfile.debian: .
-    Dockerfile.oracle: .
-
-  version_miller: "6.7.0"
-  version_lino: "v2.3.0"
-  version_pimo: "v1.17.0"
-  version_sigo: "0.3.0"
-  version_debian: "stable-20221114-slim"
-  version_mc: "RELEASE.2022-11-17T21-20-39Z"
-
 
 shell: ["sh", "-c"]
 
@@ -138,12 +129,6 @@ targets:
         1=: "daterfc3339"
         3x: true
       - |
-        build_args  = " --build-arg VERSION_MILLER=" + version_miller
-        build_args  = " --build-arg VERSION_LINO=" + version_lino
-        build_args  = " --build-arg VERSION_PIMO=" + version_pimo
-        build_args  = " --build-arg VERSION_SIGO=" + version_sigo
-        build_args  = " --build-arg VERSION_DEBIAN=" + version_debian
-        build_args  = " --build-arg VERSION_MC=" + version_mc
         build_args  = " --build-arg BUILD_DATE=" + daterfc3339
         build_args += " --build-arg VERSION=" + version
         build_args += " --build-arg REVISION=" + commit

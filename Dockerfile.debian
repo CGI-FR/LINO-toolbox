@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
-ARG VERSION_PIMO=v1.17.0
-ARG VERSION_LINO=v2.3-debian
-ARG VERSION_SIGO=0.3.0 
-ARG VERSION_MILLER=6.7.0
-ARG VERSION_MC=RELEASE.2022-11-17T21-20-39Z
-ARG VERSION_DEBIAN=stable-20221114-slim
+ARG VERSION_PIMO=v1.19.0
+ARG VERSION_LINO=v2.4.0
+ARG VERSION_SIGO=0.3.0
+ARG VERSION_MILLER=6.8.0
+ARG VERSION_MC=RELEASE.2023-07-07T07-13-57Z
+ARG VERSION_DEBIAN=stable-20230703-slim
 
 
 FROM cgifr/pimo:${VERSION_PIMO} AS pimo
@@ -38,9 +38,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends less jq wget git postgresql-client pv ca-certificates && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -r /var/cache/* /var/lib/apt/lists/* 
+    rm -r /var/cache/* /var/lib/apt/lists/*
 
-ADD certificats/github.com.crt /usr/local/share/ca-certificates/github/github.com.crt 
+ADD certificats/github.com.crt /usr/local/share/ca-certificates/github/github.com.crt
 RUN chmod 755 /usr/local/share/ca-certificates/github/ &&\
     chmod 644 /usr/local/share/ca-certificates/github/github.com.crt &&\
     update-ca-certificates
