@@ -15,27 +15,13 @@ This command will start a Docker container with the cgifr/lino-toolbox:v1.1.0-de
 ## debian image :
 | Tool | Source  | Version |
 |------|---------|---------|
-|debian|docker hub|debian:stable-20221114-slim |
-|lino  |docker hub|cgifr/lino:2.3 |
-|pimo  |docker hub|cgifr/pimo:1.17.0 |
+|debian|docker hub|debian:stable-20230703-slim |
+|lino  |docker hub|cgifr/lino:2.4.0 |
+|pimo  |docker hub|cgifr/pimo:1.19.0 |
 |sigo  |github   |0.3.0 |
-|mlr   |github   |6.7.0 |
-|mc    |docker hub|minio/mc:RELEASE.2022-11-17T21-20-39Z|
+|mlr   |github   |6.8.0 |
+|mc    |docker hub|minio/mc:RELEASE.2023-07-07T05-25-51Z|
 |jq    |debian   |- |
 |wget  |debian   |- |
 |git   |debian   |- |
 |pv    |debian   |- |
-
-## oracle image :
-| Tool | Source  | Version |
-|------|---------|---------|
-|oracle|docker hub|ghcr.io/oracle/oraclelinux7-instantclient:19 |
-|lino  |doker hub|cgifr/lino:2.3 |
-|pimo  |docker hub|cgifr/pimo:1.17.0 |
-|sigo  |github   |0.3.0 |
-|mlr   |github   |6.7.0 |
-|mc    |docker hub|minio/mc:RELEASE.2022-11-17T21-20-39Z|
-|jq    |centos   |- |
-|wget  |centos   |- |
-|git   |centos   |- |
-|pv    |centos   |- |
