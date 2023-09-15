@@ -18,9 +18,11 @@
 ARG VERSION_PIMO=v1.19.0
 ARG VERSION_LINO=v2.4.0
 ARG VERSION_SIGO=0.3.0
-ARG VERSION_MILLER=6.8.0
-ARG VERSION_MC=RELEASE.2023-07-07T05-25-51Z
-ARG VERSION_DEBIAN=stable-20230703-slim
+ARG VERSION_MIMO=0.5.0
+ARG VERSION_MILLER=6.9.0
+ARG VERSION_MC=RELEASE.2023-09-07T22-48-55Z
+ARG VERSION_DSQ=0.23.0
+ARG VERSION_DEBIAN=stable-20230904-slim
 
 
 FROM cgifr/pimo:${VERSION_PIMO} AS pimo
@@ -33,9 +35,11 @@ FROM debian:${VERSION_DEBIAN}
 
 ARG VERSION_MILLER
 ARG VERSION_SIGO
+ARG VERSION_MIMO
+ARG VERSION_DSQ
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends less jq wget git postgresql-client pv ca-certificates && \
+    apt-get install -y --no-install-recommends unzip less jq wget git postgresql-client pv ca-certificates vim iputils-ping && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -r /var/cache/* /var/lib/apt/lists/*
@@ -51,12 +55,20 @@ RUN wget -nv -O- https://github.com/johnkerl/miller/releases/download/v${VERSION
 RUN wget -nv -O- https://github.com/CGI-FR/SIGO/releases/download/v${VERSION_SIGO}/SIGO_${VERSION_SIGO}_linux_amd64.tar.gz | tar -xz -C /usr/bin sigo &&\
     chmod +x /usr/bin/sigo
 
+RUN wget -O- https://github.com/CGI-FR/MIMO/releases/download/v${VERSION_MIMO}/mimo_${VERSION_MIMO}_linux_amd64.tar.gz | tar xz -C /usr/bin mimo && \
+    chmod +x /usr/bin/mimo
+
 ADD https://github.com/andrew-d/static-binaries/raw/master/binaries/linux/x86_64/ncat /usr/bin/nc
 RUN chmod +x /usr/bin/nc
+
+RUN wget https://github.com/multiprocessio/dsq/releases/download/v${VERSION_DSQ}/dsq-linux-x64-v${VERSION_DSQ}.zip &&  unzip -d /usr/bin dsq-linux-x64-v${VERSION_DSQ}.zip && \
+    chmod +x /usr/bin/dsq && rm -f dsq-linux-x64-v${VERSION_DSQ}.zip
+
 
 COPY --from=pimo /usr/bin/pimo /usr/bin/pimo
 COPY --from=lino /usr/bin/lino /usr/bin/lino
 COPY --from=mc /usr/bin/mc /usr/bin/mc
 
+USER 1000:1000
 
 WORKDIR /home/lino
