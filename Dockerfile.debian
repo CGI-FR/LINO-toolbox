@@ -24,6 +24,10 @@ ARG VERSION_MC=RELEASE.2023-09-07T22-48-55Z
 ARG VERSION_DSQ=0.23.0
 ARG VERSION_DEBIAN=stable-20230904-slim
 
+ARG USERNAME=lino
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
 
 FROM cgifr/pimo:${VERSION_PIMO} AS pimo
 
@@ -69,6 +73,10 @@ COPY --from=pimo /usr/bin/pimo /usr/bin/pimo
 COPY --from=lino /usr/bin/lino /usr/bin/lino
 COPY --from=mc /usr/bin/mc /usr/bin/mc
 
-USER 1000:1000
+# Create the user lino
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME 
 
-WORKDIR /home/lino
+USER $USERNAME
+
+WORKDIR /home/$USERNAME
