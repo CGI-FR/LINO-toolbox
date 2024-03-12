@@ -16,7 +16,7 @@
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
 ARG VERSION_PIMO=v1.22.1
-ARG VERSION_LINO=v2.7.0
+ARG VERSION_LINO=v2.7.2
 ARG VERSION_SIGO=0.3.0
 ARG VERSION_MIMO=0.8.0
 ARG VERSION_MILLER=6.11.0

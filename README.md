@@ -16,7 +16,7 @@ This command will start a Docker container with the cgifr/lino-toolbox:v1.4.0-de
 | Tool | Source  | Version |
 |------|---------|---------|
 |debian|docker hub|debian:stable-20230904-slim |
-|lino  |docker hub|cgifr/lino:2.7.0 |
+|lino  |docker hub|cgifr/lino:2.7.2 |
 |pimo  |docker hub|cgifr/pimo:1.22.1 |
 |sigo  |github   |0.3.0 |
 |mimo  |github   |0.8.0 |
