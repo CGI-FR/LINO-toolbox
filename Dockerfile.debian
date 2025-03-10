@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with LINO.  If not, see <http:#www.gnu.org/licenses/>.
 
-ARG VERSION_PIMO=v1.28.1
+ARG VERSION_PIMO=v1.30.2
 ARG VERSION_LINO=v3.1.0
 ARG VERSION_SIGO=0.4.0
 ARG VERSION_MIMO=0.8.0
